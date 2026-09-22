@@ -153,27 +153,62 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 0 var(--space-4) var(--space-4);
 }
 
-.services__inner {
+.services__card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  text-align: center;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 2px 8px var(--shadow);
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.services__card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px var(--shadow-hover);
+}
+
+.services__card-label {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  letter-spacing: 0.12em;
+}
+
+.services__card-hint {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+  font-family: var(--font-sans);
+}
+
+.services-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) 0;
 }
 
-.service-tag {
+.services-list__item {
   display: inline-block;
-  padding: 6px 14px;
+  padding: 8px 18px;
   border-radius: 100px;
   border: 1px solid var(--divider);
   color: var(--text-secondary);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-family: var(--font-sans);
+  background: var(--bg);
   transition: all var(--transition);
 }
 
-.service-tag:hover {
+.services-list__item:hover {
   border-color: var(--accent);
   color: var(--accent);
+  background: rgba(255, 158, 181, 0.08);
 }
 
 /* ================================================================
@@ -452,27 +487,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: var(--space-4);
 }
 
-.modal__header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
-}
-
 .modal__name {
   font-family: var(--font-serif);
   font-size: var(--text-md);
   font-weight: 600;
   line-height: 1.3;
-}
-
-.modal__price {
-  font-family: var(--font-sans);
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--accent);
-  white-space: nowrap;
+  margin-bottom: var(--space-2);
 }
 
 .modal__detail {
@@ -661,7 +681,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 </header>
 
 <section class="services" id="servicesSection">
-  <div class="services__inner" id="servicesInner"></div>
+  <div class="services__card" id="servicesCard">
+    <div class="services__card-label">服务内容</div>
+    <div class="services__card-hint">点击查看详情</div>
+  </div>
 </section>
 
 <main class="main">
@@ -681,6 +704,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   <div class="modal-card" id="modalCard">
     <button class="modal__close" id="modalClose">×</button>
     <div class="modal__content" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Services Modal -->
+<div class="modal-overlay" id="servicesModalOverlay">
+  <div class="modal-card" id="servicesModalCard">
+    <button class="modal__close" id="servicesModalClose">×</button>
+    <div class="modal__content" id="servicesModalContent"></div>
   </div>
 </div>
 
@@ -719,11 +750,29 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
   function renderServices() {
     var services = MENU_DATA.services || [];
-    if (!services.length) return;
-    var inner = document.getElementById('servicesInner');
-    inner.innerHTML = services.map(function(name) {
-      return '<span class="service-tag">' + escapeHtml(name) + '</span>';
+    if (!services.length) {
+      document.getElementById('servicesSection').style.display = 'none';
+      return;
+    }
+    var card = document.getElementById('servicesCard');
+    card.addEventListener('click', function() {
+      openServicesModal(services);
+    });
+  }
+
+  function openServicesModal(services) {
+    var content = document.getElementById('servicesModalContent');
+    var listHtml = services.map(function(name) {
+      return '<span class="services-list__item">' + escapeHtml(name) + '</span>';
     }).join('');
+    content.innerHTML = '<div class="services-list">' + listHtml + '</div>';
+    document.getElementById('servicesModalOverlay').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeServicesModal() {
+    document.getElementById('servicesModalOverlay').classList.remove('is-open');
+    document.body.style.overflow = '';
   }
 
   function isVideo(url) {
@@ -742,7 +791,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     var grid = document.getElementById('menuGrid');
     grid.innerHTML = MENU_DATA.items.map(function(item, index) {
       var firstImg = getFirstImage(item);
-      var hasVideo = (item.media || []).some(function(m) { return isVideo(m); });
       var media = firstImg
         ? '<img class="dish-card__img" src="' + escapeHtml(firstImg) + '" alt="' + escapeHtml(item.name) + '" loading="lazy">'
         : '<div class="dish-card__placeholder">' + escapeHtml(getInitial(item.name)) + '</div>';
@@ -750,17 +798,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
       var badge = item.signature
         ? '<span class="dish-card__badge">推荐</span>'
         : '';
-      var videoBadge = hasVideo
-        ? '<span class="dish-card__badge" style="right:auto;left:var(--space-2)">视频</span>'
-        : '';
 
       return '<article class="dish-card reveal" data-id="' + item.id + '" data-name="' + escapeHtml(item.name) + '" data-desc="' + escapeHtml(item.desc) + '" style="transition-delay:' + (Math.min(index, 8) * 40) + 'ms">' +
-             '<div class="dish-card__media">' + badge + videoBadge + media + '</div>' +
+             '<div class="dish-card__media">' + badge + media + '</div>' +
              '<div class="dish-card__body">' +
-             '<div class="dish-card__line">' +
              '<h3 class="dish-card__name">' + escapeHtml(item.name) + '</h3>' +
-             '<span class="dish-card__price">' + formatPrice(item.price) + '</span>' +
-             '</div>' +
              '<p class="dish-card__desc">' + escapeHtml(item.desc) + '</p>' +
              '</div></article>';
     }).join('');
@@ -822,10 +864,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     content.innerHTML =
       media +
       '<div class="modal__body">' +
-      '<div class="modal__header">' +
       '<h2 class="modal__name">' + escapeHtml(item.name) + '</h2>' +
-      '<span class="modal__price">' + formatPrice(item.price) + '</span>' +
-      '</div>' +
       '<p class="modal__detail">' + escapeHtml(item.detail) + '</p>' +
       allergens +
       '</div>';
@@ -885,7 +924,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
       if (e.target === this) closeModal();
     });
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape') {
+        if (document.getElementById('servicesModalOverlay').classList.contains('is-open')) {
+          closeServicesModal();
+        } else {
+          closeModal();
+        }
+      }
+    });
+  }
+
+  function initServicesModal() {
+    document.getElementById('servicesModalClose').addEventListener('click', closeServicesModal);
+    document.getElementById('servicesModalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeServicesModal();
     });
   }
 
@@ -921,6 +973,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     renderServices();
     renderGrid();
     initModal();
+    initServicesModal();
     initTheme();
     initReveal();
   });

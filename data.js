@@ -5,11 +5,11 @@ const MENU_DATA = {
     status: 'open',
     hours: '14:00-24:00',
     closedDay: '快乐不打烊'
-  },
-  services: [
+  },  
+services: [
     '【情难自控】599/h：1V1影院房精神陪伴，可以跟小姐姐深度接触，感受小姐姐的嫩滑肌，👄脸，摸🐻，骑乘式拥抱。',
     '【情难自控】799/h：🐍吻，真空摸🐻，亲🐻，乘骑式抱抱☺️感受初恋的感觉，卸下一天的疲劳，其他要求可以跟小姐姐聊聊，合理范围都可以满足！',
-    '【外派地陪业务】700/h 两小时起，女友感陪伴',
+    '【外派地陪业务】700/h 两小时起，女友感陪伴，体验恋爱的感觉~',
     '【外派喝酒业务】499/h 三小时起，微醺、解锁偶遇的邂逅时光！'
   ],
   items: [
@@ -17,24 +17,30 @@ const MENU_DATA = {
       id: 'coffee',
       name: '猫猫',
       price: 12,
-      desc: '160 86 C+ 曲线玲珑 御萝双休',
-      detail: '选用埃塞俄比亚与哥伦比亚拼配豆，每日新鲜烘焙。中深烘焙带来坚果与黑巧克力的香气，口感干净明亮。凌晨三点的路灯、加班后的疲惫，一杯热美式是最好的陪伴。',
+      desc: '160 86 C+ 曲线玲珑 萝御双修',
+      detail: '160 86 C+ 曲线玲珑 萝御双修',
       signature: true,
       media: [
-        'images/maomao-1.jpg',
-        'videos/coffee-pour.mp4',
-        'images/coffee-2.jpg',
-        'images/coffee-3.jpg'
+        'images/猫猫-1.jpg',
+        'images/猫猫-2.jpg',
+        'images/猫猫-3.jpg',
+        'images/猫猫-4.jpg'
       ]
     },
     {
       id: 'latte',
-      name: '热拿铁咖啡',
+      name: '饱饱',
       price: 15,
-      desc: '丝滑奶泡，温润顺口',
-      detail: '浓缩咖啡与新鲜牛乳的完美比例。奶泡绵密细腻，温度控制在65度，入口即化的丝滑感中藏着咖啡的醇厚。是冬日清晨里最温柔的一口。',
+      desc: '168 90 B 萝御双修 顶颜魅魔',
+      detail: '168 90 B 萝御双修 顶颜魅魔',
       signature: false,
-      media: []
+      media: [
+        'images/饱饱-1.jpg',
+        'images/饱饱-2.jpg',
+        'images/饱饱-3.jpg',
+        'images/饱饱-4.jpg',
+        'images/饱饱-5.jpg'
+      ]
     },
     {
       id: 'onigiri',
